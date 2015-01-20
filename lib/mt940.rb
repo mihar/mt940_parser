@@ -42,7 +42,11 @@ class MT940
     private
       def parse_amount_in_cents(amount)
         # don't use Integer(amount) function, because amount can be "008" - interpreted as octal number ("010" = 8)
-        amount.gsub(',', '').to_i
+        amount.gsub(',', '.').to_i
+      end
+
+      def parse_amount(amount)
+        BigDecimal.new amount.gsub(',', '.')
       end
 
       def parse_date(date)
@@ -126,7 +130,7 @@ class MT940
 
       raw_date = $2
       @currency = $3
-      @amount = parse_amount_in_cents($4)
+      @amount = parse_amount($4)
 
       @date = case raw_date
         when 'ALT', '0'
@@ -159,7 +163,7 @@ class MT940
           :return_debit
       end
 
-      @amount = parse_amount_in_cents($4)
+      @amount = parse_amount($4)
       @swift_code = $5
       @reference = $6
       @transaction_description = $7
